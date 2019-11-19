@@ -53,11 +53,11 @@ public class SnakeGame extends ApplicationAdapter {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         batch.draw(snake_background_img, 0, 0);
-        batch.draw(snake_head_img, snake.snakeHead.x, snake.snakeHead.y);
-        batch.draw(apple_img, apple_rect.x, apple_rect.y);
         for (Rectangle snake_body : snake.snakeBody) {
             batch.draw(snake_body_img, snake_body.x, snake_body.y);
         }
+        batch.draw(snake_head_img, snake.snakeHead.x, snake.snakeHead.y);
+        batch.draw(apple_img, apple_rect.x, apple_rect.y);
         batch.end();
 
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && direction != SnakeDirection.RIGHT)
@@ -76,13 +76,13 @@ public class SnakeGame extends ApplicationAdapter {
         }
 
         if (direction == SnakeDirection.LEFT && snake.snakeHead.x > 0)
-            snakeMove(-200, 0);
+            snakeMove(-1, 0);
         if (direction == SnakeDirection.UP && snake.snakeHead.y < gameHeight - snake.snakeHead.height)
-            snakeMove(0, 200);
+            snakeMove(0, 1);
         if (direction == SnakeDirection.RIGHT && snake.snakeHead.x < gameWidth - snake.snakeHead.width)
-            snakeMove(200, 0);
+            snakeMove(1, 0);
         if (direction == SnakeDirection.DOWN && snake.snakeHead.y > 0)
-            snakeMove(0, -200);
+            snakeMove(0, -1);
     }
 
     private void addBody() {
@@ -107,14 +107,14 @@ public class SnakeGame extends ApplicationAdapter {
     }
 
     private void snakeMove(int x, int y) {
-        float deltaTime = Gdx.graphics.getDeltaTime();
+
         if (!snake.snakeBody.isEmpty()) {
             snake.snakeBody.remove();
             snake.snakeBody.add(new Rectangle(snake.snakeHead.x,
                     snake.snakeHead.y, 20, 20));
         }
-        snake.snakeHead.x += x * deltaTime;
-        snake.snakeHead.y += y * deltaTime;
+        snake.snakeHead.x += 3 * x;
+        snake.snakeHead.y += 3 * y;
     }
 
     @Override
