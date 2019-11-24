@@ -25,6 +25,7 @@ public class MenuState extends State{
             Vector3 touch = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
             cam.unproject(touch);
             if(playRect.contains(touch.x, touch.y))
+                dispose();
                 gsm.set(new PlayState(gsm));
         }
     }

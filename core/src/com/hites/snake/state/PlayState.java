@@ -25,22 +25,20 @@ public class PlayState extends State {
     private float totalDeltaTime;
     private int score;
 
-    protected PlayState(GameStateManager gsm) {
+    PlayState(GameStateManager gsm) {
         super(gsm);
         backgroundImg = new Texture("snake_background.png");
         snakeHeadImg = new Texture("snake_head.png");
         snakeBodyImg = new Texture("snake_body.png");
         appleImg = new Texture("apple.png");
 
-        Random random = new Random();
-
-        Rectangle snake_head = new Rectangle(random.nextInt(SnakeGame.WIDTH), random.nextInt(SnakeGame.HEIGHT), 32, 32);
+        Rectangle snake_head = new Rectangle(SnakeGame.WIDTH/2, SnakeGame.HEIGHT/2, 32, 32);
         snake = new Snake(snake_head, new LinkedList<Rectangle>());
         snake.getSnakeBody().add(new Rectangle(snake_head.x - snake_head.width / 2, snake_head.y, 20, 20));
 
         drawNewApple();
 
-        direction = Direction.UP;
+        direction = Direction.NONE;
 
         Gdx.gl.glClearColor(1, 0, 0, 1);
     }
