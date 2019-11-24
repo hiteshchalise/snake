@@ -15,11 +15,14 @@ import java.util.Random;
 
 public class PlayState extends State {
 
-    private final Texture backgroundImg;
-    private final Texture snakeHeadImg;
     private final Texture snakeBodyImg;
     private final Snake snake;
     private final Texture appleImg;
+    private final Texture backgroundImg;
+    private final Texture snakeHeadImgRight;
+    private final Texture snakeHeadImgDown;
+    private final Texture snakeHeadImgLeft;
+    private final Texture snakeHeadImgUp;
     private Direction direction;
     private Rectangle apple_rect;
     private float totalDeltaTime;
@@ -28,7 +31,10 @@ public class PlayState extends State {
     PlayState(GameStateManager gsm) {
         super(gsm);
         backgroundImg = new Texture("snake_background.png");
-        snakeHeadImg = new Texture("snake_head.png");
+        snakeHeadImgRight = new Texture("snake_head_right.png");
+        snakeHeadImgDown = new Texture("snake_head_down.png");
+        snakeHeadImgLeft = new Texture("snake_head_left.png");
+        snakeHeadImgUp = new Texture("snake_head_up.png");
         snakeBodyImg = new Texture("snake_body.png");
         appleImg = new Texture("apple.png");
 
@@ -119,15 +125,31 @@ public class PlayState extends State {
         for (Rectangle snake_body : snake.getSnakeBody()) {
             sb.draw(snakeBodyImg, snake_body.x, snake_body.y);
         }
-        sb.draw(snakeHeadImg, snake.getSnakeHead().x, snake.getSnakeHead().y);
+        switch (direction){
+            case UP:
+                sb.draw(snakeHeadImgUp, snake.getSnakeHead().x, snake.getSnakeHead().y);
+                break;
+            case DOWN:
+                sb.draw(snakeHeadImgDown, snake.getSnakeHead().x, snake.getSnakeHead().y);
+                break;
+            case RIGHT:
+                sb.draw(snakeHeadImgRight, snake.getSnakeHead().x, snake.getSnakeHead().y);
+                break;
+            case LEFT:
+                sb.draw(snakeHeadImgLeft, snake.getSnakeHead().x, snake.getSnakeHead().y);
+                break;
+        }
         sb.draw(appleImg, apple_rect.x, apple_rect.y);
         sb.end();
     }
 
     @Override
     public void dispose() {
+        snakeHeadImgRight.dispose();
+        snakeHeadImgUp.dispose();
+        snakeHeadImgDown.dispose();
+        snakeHeadImgLeft.dispose();
         backgroundImg.dispose();
-        snakeHeadImg.dispose();
         snakeBodyImg.dispose();
     }
 }
