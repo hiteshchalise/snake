@@ -18,7 +18,7 @@ public class SnakeGameS extends ApplicationAdapter {
     private int gameWidth = 512, gameHeight = 512;
     private Rectangle apple_rect;
     private OrthographicCamera camera;
-    private SnakeDirection direction;
+    private Direction direction;
     private int score = 0;
     private Snake snake;
     private float totalDeltaTime = 0.0f;
@@ -38,11 +38,11 @@ public class SnakeGameS extends ApplicationAdapter {
 
         Rectangle snake_head = new Rectangle(random.nextInt(gameWidth), random.nextInt(gameHeight), 32, 32);
         snake = new Snake(snake_head, new LinkedList<Rectangle>());
-        snake.snakeBody.add(new Rectangle(snake_head.x - snake_head.width / 2, snake_head.y, 20, 20));
+        snake.getSnakeBody().add(new Rectangle(snake_head.x - snake_head.width / 2, snake_head.y, 20, 20));
 
         drawNewApple();
 
-        direction = SnakeDirection.UP;
+        direction = Direction.UP;
     }
 
     @Override
@@ -54,21 +54,21 @@ public class SnakeGameS extends ApplicationAdapter {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         batch.draw(snake_background_img, 0, 0);
-        for (Rectangle snake_body : snake.snakeBody) {
+        for (Rectangle snake_body : snake.getSnakeBody()) {
             batch.draw(snake_body_img, snake_body.x, snake_body.y);
         }
-        batch.draw(snake_head_img, snake.snakeHead.x, snake.snakeHead.y);
+        batch.draw(snake_head_img, snake.getSnakeHead().x, snake.getSnakeHead().y);
         batch.draw(apple_img, apple_rect.x, apple_rect.y);
         batch.end();
 
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && direction != SnakeDirection.RIGHT)
-            direction = SnakeDirection.LEFT;
-        if (Gdx.input.isKeyPressed(Input.Keys.UP) && direction != SnakeDirection.DOWN)
-            direction = SnakeDirection.UP;
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && direction != SnakeDirection.LEFT)
-            direction = SnakeDirection.RIGHT;
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && direction != SnakeDirection.UP)
-            direction = SnakeDirection.DOWN;
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && direction != Direction.RIGHT)
+            direction = Direction.LEFT;
+        if (Gdx.input.isKeyPressed(Input.Keys.UP) && direction != Direction.DOWN)
+            direction = Direction.UP;
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && direction != Direction.LEFT)
+            direction = Direction.RIGHT;
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && direction != Direction.UP)
+            direction = Direction.DOWN;
 
         if (checkIfAppleEaten()) {
             addScore();
@@ -76,18 +76,18 @@ public class SnakeGameS extends ApplicationAdapter {
             addBody();
         }
 
-        if (direction == SnakeDirection.LEFT && snake.snakeHead.x > 0)
+        if (direction == Direction.LEFT && snake.getSnakeHead().x > 0)
             snakeMove(-1, 0);
-        if (direction == SnakeDirection.UP && snake.snakeHead.y < gameHeight - snake.snakeHead.height)
+        if (direction == Direction.UP && snake.getSnakeHead().y < gameHeight - snake.getSnakeHead().height)
             snakeMove(0, 1);
-        if (direction == SnakeDirection.RIGHT && snake.snakeHead.x < gameWidth - snake.snakeHead.width)
+        if (direction == Direction.RIGHT && snake.getSnakeHead().x < gameWidth - snake.getSnakeHead().width)
             snakeMove(1, 0);
-        if (direction == SnakeDirection.DOWN && snake.snakeHead.y > 0)
+        if (direction == Direction.DOWN && snake.getSnakeHead().y > 0)
             snakeMove(0, -1);
     }
 
     private void addBody() {
-        snake.snakeBody.add(new Rectangle(snake.snakeHead.x, snake.snakeHead.y, 20, 20));
+        snake.getSnakeBody().add(new Rectangle(snake.getSnakeHead().x, snake.getSnakeHead().y, 20, 20));
     }
 
     private void addScore() {
@@ -104,7 +104,7 @@ public class SnakeGameS extends ApplicationAdapter {
     }
 
     private boolean checkIfAppleEaten() {
-        return snake.snakeHead.overlaps(apple_rect);
+        return snake.getSnakeHead().overlaps(apple_rect);
     }
 
     private void snakeMove(int x, int y) {
@@ -113,13 +113,13 @@ public class SnakeGameS extends ApplicationAdapter {
         if(totalDeltaTime<0.1f) return;
         totalDeltaTime = 0.0f;
 
-        snake.snakeHead.x += 20 * x;
-        snake.snakeHead.y += 20 * y;
+        snake.getSnakeHead().x += 20 * x;
+        snake.getSnakeHead().y += 20 * y;
 
-        if (!snake.snakeBody.isEmpty()) {
-            snake.snakeBody.remove();
-            snake.snakeBody.add(new Rectangle(snake.snakeHead.x - 20 * x ,
-                    snake.snakeHead.y - 20 * y, 20, 20));
+        if (!snake.getSnakeBody().isEmpty()) {
+            snake.getSnakeBody().remove();
+            snake.getSnakeBody().add(new Rectangle(snake.getSnakeHead().x - 20 * x ,
+                    snake.getSnakeHead().y - 20 * y, 20, 20));
         }
     }
 
@@ -128,12 +128,5 @@ public class SnakeGameS extends ApplicationAdapter {
         batch.dispose();
         snake_background_img.dispose();
         snake_head_img.dispose();
-    }
-
-    private enum SnakeDirection {
-        UP,
-        DOWN,
-        RIGHT,
-        LEFT
     }
 }

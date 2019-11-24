@@ -8,8 +8,16 @@ import java.util.Queue;
 
 public class Snake {
 
-    Rectangle snakeHead;
-    LinkedList<Rectangle> snakeBody;
+    public Rectangle getSnakeHead() {
+        return snakeHead;
+    }
+
+    public LinkedList<Rectangle> getSnakeBody() {
+        return snakeBody;
+    }
+
+    private Rectangle snakeHead;
+    private LinkedList<Rectangle> snakeBody;
 
     public Snake(Rectangle snakeHead, LinkedList<Rectangle> snakeBody){
         this.snakeHead = snakeHead;
