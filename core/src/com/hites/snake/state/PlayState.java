@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.hites.snake.Direction;
@@ -27,9 +28,12 @@ public class PlayState extends State {
     private Rectangle apple_rect;
     private float totalDeltaTime;
     private int score;
+    private boolean hasCollided;
+    private final BitmapFont font;
 
     PlayState(GameStateManager gsm) {
         super(gsm);
+
         backgroundImg = new Texture("snake_background.png");
         snakeHeadImgRight = new Texture("snake_head_right.png");
         snakeHeadImgDown = new Texture("snake_head_down.png");
@@ -38,7 +42,7 @@ public class PlayState extends State {
         snakeBodyImg = new Texture("snake_body.png");
         appleImg = new Texture("apple.png");
 
-        Rectangle snake_head = new Rectangle(SnakeGame.WIDTH/2, SnakeGame.HEIGHT/2, 32, 32);
+        Rectangle snake_head = new Rectangle(SnakeGame.WIDTH / 2, SnakeGame.HEIGHT / 2, 32, 32);
         snake = new Snake(snake_head, new LinkedList<Rectangle>());
         snake.getSnakeBody().add(new Rectangle(snake_head.x - snake_head.width / 2, snake_head.y, 20, 20));
 
@@ -47,6 +51,7 @@ public class PlayState extends State {
         direction = Direction.NONE;
 
         Gdx.gl.glClearColor(1, 0, 0, 1);
+        font = new BitmapFont();
     }
 
     private void drawNewApple() {
@@ -59,14 +64,14 @@ public class PlayState extends State {
 
     @Override
     public void handleInput() {
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && direction !=Direction.RIGHT)
-            direction =Direction.LEFT;
-        if (Gdx.input.isKeyPressed(Input.Keys.UP) && direction !=Direction.DOWN)
-            direction =Direction.UP;
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && direction !=Direction.LEFT)
-            direction =Direction.RIGHT;
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && direction !=Direction.UP)
-            direction =Direction.DOWN;
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && direction != Direction.RIGHT)
+            direction = Direction.LEFT;
+        if (Gdx.input.isKeyPressed(Input.Keys.UP) && direction != Direction.DOWN)
+            direction = Direction.UP;
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && direction != Direction.LEFT)
+            direction = Direction.RIGHT;
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && direction != Direction.UP)
+            direction = Direction.DOWN;
     }
 
     @Override
@@ -77,14 +82,24 @@ public class PlayState extends State {
             drawNewApple();
             addBody();
         }
-        if (direction == Direction.LEFT && snake.getSnakeHead().x > 0)
+        checkBorderCollision();
+        if (hasCollided) {
+            dispose();
+            gsm.set(new MenuState(gsm));
+        }
+        if (direction == Direction.LEFT)
             snakeMove(-1, 0, dt);
-        if (direction == Direction.UP && snake.getSnakeHead().y < SnakeGame.HEIGHT - snake.getSnakeHead().height)
+        if (direction == Direction.UP)
             snakeMove(0, 1, dt);
-        if (direction == Direction.RIGHT && snake.getSnakeHead().x < SnakeGame.WIDTH - snake.getSnakeHead().width)
+        if (direction == Direction.RIGHT)
             snakeMove(1, 0, dt);
-        if (direction == Direction.DOWN && snake.getSnakeHead().y > 0)
+        if (direction == Direction.DOWN)
             snakeMove(0, -1, dt);
+    }
+
+    private void checkBorderCollision() {
+        if (snake.getSnakeHead().x < 0 || snake.getSnakeHead().y < 0 || snake.getSnakeHead().x > SnakeGame.WIDTH || snake.getSnakeHead().y > SnakeGame.HEIGHT)
+            hasCollided = true;
     }
 
     private void addBody() {
@@ -93,7 +108,6 @@ public class PlayState extends State {
 
     private void addScore() {
         score += 1;
-        Gdx.app.log("SnakeGameS", "Score: " + score);
     }
 
     private boolean checkIfAppleEaten() {
@@ -102,7 +116,7 @@ public class PlayState extends State {
 
     private void snakeMove(int x, int y, float dt) {
         totalDeltaTime += dt;
-        if(totalDeltaTime <0.1f) return;
+        if (totalDeltaTime < 0.1f) return;
         totalDeltaTime = 0.0f;
 
         snake.getSnakeHead().x += 20 * x;
@@ -110,7 +124,7 @@ public class PlayState extends State {
 
         if (!snake.getSnakeBody().isEmpty()) {
             snake.getSnakeBody().remove();
-            snake.getSnakeBody().add(new Rectangle(snake.getSnakeHead().x - 20 * x ,
+            snake.getSnakeBody().add(new Rectangle(snake.getSnakeHead().x - 20 * x,
                     snake.getSnakeHead().y - 20 * y, 20, 20));
         }
     }
@@ -125,7 +139,7 @@ public class PlayState extends State {
         for (Rectangle snake_body : snake.getSnakeBody()) {
             sb.draw(snakeBodyImg, snake_body.x, snake_body.y);
         }
-        switch (direction){
+        switch (direction) {
             case UP:
                 sb.draw(snakeHeadImgUp, snake.getSnakeHead().x, snake.getSnakeHead().y);
                 break;
@@ -139,6 +153,7 @@ public class PlayState extends State {
                 sb.draw(snakeHeadImgLeft, snake.getSnakeHead().x, snake.getSnakeHead().y);
                 break;
         }
+        font.draw(sb, "Score: " + score, 10, SnakeGame.HEIGHT - 10);
         sb.draw(appleImg, apple_rect.x, apple_rect.y);
         sb.end();
     }
